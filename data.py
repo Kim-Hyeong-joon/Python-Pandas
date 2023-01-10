@@ -4,13 +4,19 @@ conditions = ["confirmed", "deaths", "recovered"]
 
 # total Confirmed, Deaths
 daily_df = pd.read_csv("data/daily_report.csv")
-totals_df = (
-    daily_df[["Confirmed", "Deaths"]].sum().reset_index(name="count")
-)
+totals_df = daily_df[["Confirmed", "Deaths"]].sum().reset_index(name="count")
 totals_df = totals_df.rename(columns={"index": "condition"})
 # country daily Confirmed, Deaths
 countries_df = daily_df[["Country_Region", "Confirmed", "Deaths"]]
-countries_df = countries_df.groupby("Country_Region").sum().reset_index()
+countries_df = (
+    countries_df.groupby("Country_Region")
+    .sum()
+    .sort_values(by="Confirmed", ascending=False)
+    .reset_index()
+)
+
+dropdown_options = countries_df.sort_values("Country_Region").reset_index()
+dropdown_options = dropdown_options["Country_Region"]
 
 # country series
 def make_country_df(country):
